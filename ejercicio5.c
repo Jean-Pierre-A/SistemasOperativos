@@ -6,16 +6,23 @@
      float promedio = 0;
      int Min = 0;
      int Max = 0;
+     int vec [argc-1];
      Min = atoi(argv[1]);
      for(int i = 1; i< argc; i++){
-         promedio += atoi(argv[i]);
-         if(Min>atoi(argv[i]))
+        vec[i-1] = atoi(argv[i]);
+     }
+
+     for(int i = 0; i< argc-1; i++){
+
+         printf("Vec[%d] es %d \n", i ,vec[i]);
+         promedio += vec[i];
+         if(Min> vec[i])
          {
-             Min = atoi(argv[i]);
+             Min = vec[i];
          }
-         if(Max <  atoi(argv[i]))
+         if(Max <  vec[i])
          {
-              Max = atoi(argv[i]);
+              Max = vec[i];
          }
      }
 
