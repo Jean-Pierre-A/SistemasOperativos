@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <ctype.h>
 
 
 typedef struct personal
@@ -25,6 +26,8 @@ FILE  *IN_FILE, *IN_FILE2, *IN_FILE3;
  char c, ArEntrada[20], ArSalida[20], ArSalida2[20], AuxNombre[20], AuxOcupacion[20];
  int  AuxEdad = 0;
 
+
+
 strcpy(ArEntrada, argv[1]);
 strcpy(ArSalida, argv[2]);
 strcpy(ArSalida2, argv[3]);
@@ -37,8 +40,10 @@ if(IN_FILE == NULL)
  while(!feof(IN_FILE))
  {
    fscanf(IN_FILE, "%s %s %d", AuxNombre, AuxOcupacion, &AuxEdad);
+   AuxOcupacion[0] = toupper(AuxOcupacion[0]);
    strcpy(persona[j].nombre, AuxNombre);
    strcpy(persona[j].ocupacion, AuxOcupacion);
+   
    persona[j].edad = AuxEdad;
    
 
