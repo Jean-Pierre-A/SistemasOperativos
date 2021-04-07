@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-FILE *OUT_FILE, *IN_FILE;
+FILE *IN_FILE;
 pid_t pid_hijo;
 //IN_FILE =  fopen(ArEntrada, "r");
 char c;
@@ -21,6 +21,8 @@ for(int i = 0; i < 2; i++)
 }
 
 wait(NULL);
+wait(NULL);
+
 
 IN_FILE =  fopen(argv[2], "r");
 

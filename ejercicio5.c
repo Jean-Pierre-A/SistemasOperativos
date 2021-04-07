@@ -14,7 +14,7 @@
 
      for(int i = 0; i< argc-1; i++){
 
-         printf("Vec[%d] es %d \n", i ,vec[i]);
+        // printf("Vec[%d] es %d \n", i ,vec[i]);
          promedio += vec[i];
          if(Min> vec[i])
          {

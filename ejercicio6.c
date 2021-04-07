@@ -18,7 +18,7 @@
 
        if(pid_hijo == 0)
        {
-           printf("HIJO %d\n", nroHijo);
+           printf("HIJO %d con pid %d\n", nroHijo, getpid);
           break;
        }
        else{
