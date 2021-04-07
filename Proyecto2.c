@@ -12,7 +12,7 @@ typedef struct personal
      int edad;
  } personas;
 
- personas persona[100];
+ personas persona[100], personaHilo1[100], personaHilo2[100];
 
 int j = 0; // J Es la cantidad de lineas
 void *inverso(void* file);
@@ -45,6 +45,11 @@ if(IN_FILE == NULL)
    strcpy(persona[j].ocupacion, AuxOcupacion);
    
    persona[j].edad = AuxEdad;
+   strcpy(personaHilo2[j].nombre, AuxNombre);
+   strcpy(personaHilo2[j].ocupacion, AuxOcupacion);
+   
+   personaHilo2[j].edad = AuxEdad;
+   
    
 
    j++;
@@ -62,11 +67,10 @@ printf("--------------------------------\n");
 pthread_t hilo1, hilo2;
 
 pthread_create(&hilo1, NULL,&inverso,&ArSalida);
-
-pthread_join(hilo1, NULL);
-
 pthread_create(&hilo2, NULL,&alfabetico,&ArSalida2);
 
+
+pthread_join(hilo1, NULL);
 pthread_join(hilo2, NULL);
 
 
@@ -135,19 +139,19 @@ void *alfabetico(void* file)
     {
         for(int i = 0; i < j-(m+1); i++)
         {
-            if(strcmp(persona[i].ocupacion, persona[i+1].ocupacion)>0)
+            if(strcmp(personaHilo2[i].ocupacion, personaHilo2[i+1].ocupacion)>0)
             {
-            strcpy(AuxOcupacion, persona[i].ocupacion);
-            strcpy(persona[i].ocupacion,persona[i+1].ocupacion);
-            strcpy(persona[i+1].ocupacion,AuxOcupacion);
+            strcpy(AuxOcupacion, personaHilo2[i].ocupacion);
+            strcpy(personaHilo2[i].ocupacion,personaHilo2[i+1].ocupacion);
+            strcpy(personaHilo2[i+1].ocupacion,AuxOcupacion);
 
-            strcpy(AuxNombre, persona[i].nombre);
-            strcpy(persona[i].nombre,persona[i+1].nombre);
-            strcpy(persona[i+1].nombre,AuxNombre);
+            strcpy(AuxNombre, personaHilo2[i].nombre);
+            strcpy(personaHilo2[i].nombre,personaHilo2[i+1].nombre);
+            strcpy(personaHilo2[i+1].nombre,AuxNombre);
 
-            AuxEdad =  persona[i].edad;
-            persona[i].edad = persona[i+1].edad;
-            persona[i+1].edad = AuxEdad;
+            AuxEdad =  personaHilo2[i].edad;
+            personaHilo2[i].edad = personaHilo2[i+1].edad;
+            personaHilo2[i+1].edad = AuxEdad;
 
            
           
@@ -158,7 +162,7 @@ void *alfabetico(void* file)
 
     for(int i = 0; i < j; i++)
     {
-        fprintf(OUT_FILE2," %s %s %d \n",persona[i].nombre, persona[i].ocupacion, persona[i].edad);
+        fprintf(OUT_FILE2," %s %s %d \n",personaHilo2[i].nombre, personaHilo2[i].ocupacion, personaHilo2[i].edad);
     }
     fclose(OUT_FILE2);
     return NULL;
