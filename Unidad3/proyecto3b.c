@@ -151,6 +151,8 @@ void recibirMsg()
 {
 char *dir;
 void *map;
+
+map = mmap(NULL, SH_SIZE, PROT_READ, MAP_SHARED, shared1, 0);
  for(;;)
  {
 
@@ -159,7 +161,6 @@ void *map;
          exit(EXIT_FAILURE);
     }
 
-      map = mmap(NULL, SH_SIZE, PROT_READ, MAP_SHARED, shared1, 0);
     if(map == MAP_FAILED){
         perror("mmapR2: ");
          exit(EXIT_FAILURE);
@@ -168,19 +169,21 @@ void *map;
     dir = (char*)map;
     fprintf(stdout, "Usuario [1]: %s\n",dir);
 
-    if(munmap(dir, SH_SIZE) == -1){
-        perror("unmapR2: ");
-         exit(EXIT_FAILURE);
-    }
+   
 
     if(sem_post(semLe2) == -1){
         perror("semLe2 post: ");
          exit(EXIT_FAILURE);
     }
  }
-    return 0;
+    
+ if(munmap(dir, SH_SIZE) == -1)
+ {
+        perror("unmapR2: ");
+         exit(EXIT_FAILURE);
+ }
 
-
+return 0;
 }
 
  void main (void)
