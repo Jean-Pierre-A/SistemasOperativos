@@ -20,22 +20,22 @@ void iniciar_recursos()
 shared2 = shm_open("MemCompartida2", O_CREAT | O_RDWR, 0600);
 if(shared2 == -1)
 {
-       perror("shared1 create: ");
+       perror("Error shared1 create ");
         exit(EXIT_FAILURE);
 }
-fprintf( stdout,"Se creó y trunco shared2 con descriptor: %d\n", shared1);
+//fprintf( stdout,"Se creó y trunco shared2 con descriptor %d\n", shared1);
 if(-1 == ftruncate(shared2, SH_SIZE))
 {
-       perror("ftruncate1: ");
+       perror("Error ftruncate1");
         exit(EXIT_FAILURE);
 }
 
 shared1 = shm_open("MemCompartida1", O_RDONLY, 0600);
 if(shared1 == -1){
-        perror("shared1 read: ");
+        perror("Error shared1 read: ");
         exit(EXIT_FAILURE);
     }
-fprintf(stdout, "Se abrió shared2 con descriptor: %d\n", shared2);
+//fprintf(stdout, "Se abrió shared2 con descriptor %d\n", shared2);
 
 
 }
@@ -44,12 +44,12 @@ void apagar_recursos()
 {
 
     if(close(shared2 == -1)){
-            perror("closeS2: ");
+            perror("Error closeS2 ");
              exit(EXIT_FAILURE);
         }
 
     if(shm_unlink("MemCompartida2") == -1){
-            perror("unlinkS2: ");
+            perror("Error unlinkS2 ");
               exit(EXIT_FAILURE);;
         }
 }
@@ -59,23 +59,23 @@ void iniciar_control()
 
     semEs2 = sem_open("semEs2", O_CREAT, perm, value);
     if(semEs2 == SEM_FAILED){
-        perror("semEs2 open: ");
+        perror("Error  semEs2 open ");
         exit(EXIT_FAILURE);
     }
     semLe2 = sem_open("semLe2", O_CREAT, perm, value);
     if(semLe2 == SEM_FAILED){
-        perror("semLe2 open: ");
+        perror("Error semLe2 open ");
         exit(EXIT_FAILURE);
     }
 
     semEs1 = sem_open("semEs1", 0);
     if(semEs1 == SEM_FAILED){
-        perror("semEs1 open: ");
+        perror("Error semEs1 open: ");
         exit(EXIT_FAILURE);
     }
     semLe1 = sem_open("semLe1", 0);
     if(semLe1 == SEM_FAILED){
-        perror("semLe1 open: ");
+        perror("Error semLe1 open: ");
         exit(EXIT_FAILURE);
     }
 
@@ -86,19 +86,19 @@ void apagar_control()
 {
 
    if(sem_close(semEs2) == -1){
-        perror("semEs2 close: ");
+        perror("Error  semEs2 close: ");
          exit(EXIT_FAILURE);
     }
     if(sem_unlink(semEs2) == -1){
-        perror("semEs2 unlink: ");
+        perror("Error  semEs2 unlink: ");
         exit(EXIT_FAILURE);
     }
     if(sem_close(semLe2) == -1){
-        perror("semLe2 close: ");
+        perror("Error semLe2 close: ");
          exit(EXIT_FAILURE);
     }
     if(sem_unlink(semLe2) == -1){
-        perror("semLe2 unlink: ");
+        perror("Error semLe2 unlink: ");
         exit(EXIT_FAILURE);
     }
 
@@ -129,18 +129,18 @@ while(fgets(buf, sizeof buf, stdin) != NULL)
           exit(EXIT_FAILURE);
       }
       dir = (char*)map;
-      memcpy(dir, buf, sizeof(buf));
-       if(munmap(dir, SH_SIZE) == -1){
-            perror("unmapS2: ");
-            exit(EXIT_FAILURE);
-      }
-        
+      memcpy(dir, buf, sizeof(buf));   
       if(sem_wait(semLe1) == -1){
           perror("semLe1 wait: ");
           exit(EXIT_FAILURE);
        }
 }
 
+if(munmap(dir, SH_SIZE) == -1)
+ {
+      perror("unmapS2: ");
+      exit(EXIT_FAILURE);
+}
 apagar_control();
 apagar_recursos();
 
@@ -166,7 +166,7 @@ void *map;
     }
 
     dir = (char*)map;
-    fprintf(stdout, "[2]: %s\n",dir);
+    fprintf(stdout, "Usuario [1]: %s\n",dir);
 
     if(munmap(dir, SH_SIZE) == -1){
         perror("unmapR2: ");
@@ -185,12 +185,16 @@ void *map;
 
  void main (void)
  {
-    iniciar_control();
     iniciar_recursos();
+    iniciar_control();
+    
  
 
    pthread_t id_hiloEnv;
    pthread_t id_hiloRec;
+
+   fprintf(stdout,"Chat Iniciado....\n");
+   fprintf(stdout,"--------------Chat Usuario [2]--------------\n");
 
     pthread_create(&id_hiloEnv, NULL, &enviarMsg, NULL);
     pthread_create(&id_hiloRec, NULL, &recibirMsg, NULL);
