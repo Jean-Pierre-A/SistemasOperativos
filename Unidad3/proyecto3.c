@@ -8,6 +8,7 @@
  #include <sys/mman.h>
  #include <sys/wait.h>
  #include <semaphore.h>
+ #include <pthread.h>
  #define SH_SIZE 1000
 
 int shared1, shared2;
@@ -111,30 +112,29 @@ char buf[SH_SIZE];
 char *dir;
 void *map;
 int len;
-
-
 map = mmap(NULL, SH_SIZE, PROT_WRITE, MAP_SHARED, shared1, 0);
+
+if(map == MAP_FAILED)
+{
+     perror("Error mmapS1: ");
+        exit(EXIT_FAILURE);
+}
+
+  dir = (char*)map;
+
 while(fgets(buf, sizeof buf, stdin) != NULL)
 {
     len = strlen(buf);
     if(buf[len-1] == '\n') buf[len-1] = '\0';
 
+    memcpy(dir, buf, sizeof(buf));
+
     if(sem_post(semEs1) == -1){
         perror("Error semEs1 post: ");
          exit(EXIT_FAILURE);
      }
-
-    if(map == MAP_FAILED){
-          perror("Error mmapS1: ");
-          exit(EXIT_FAILURE);
-      }
-
-     
-      dir = (char*)map;
-      memcpy(dir, buf, sizeof(buf));
-     
-        
-      if(sem_wait(semLe2) == -1){
+          
+    if(sem_wait(semLe2) == -1){
           perror("Error semLe2 wait: ");
           exit(EXIT_FAILURE);
        }
@@ -156,6 +156,13 @@ void recibirMsg()
 char *dir;
 void *map;
  map = mmap(NULL, SH_SIZE, PROT_READ, MAP_SHARED, shared2, 0);
+
+    if(map == MAP_FAILED){
+        perror("Error mmapR1: ");
+         exit(EXIT_FAILURE);
+    }
+
+    dir = (char*)map;
  for(;;)
  {
 
@@ -163,17 +170,7 @@ void *map;
         perror("Error semEs2 wait: ");
          exit(EXIT_FAILURE);
     }
-
-     
-    if(map == MAP_FAILED){
-        perror("Error mmapR1: ");
-         exit(EXIT_FAILURE);
-    }
-
-    dir = (char*)map;
     fprintf(stdout, "Usuario [2]: %s\n",dir);
-
-
     if(sem_post(semLe1) == -1){
         perror("Error semLe1 post: ");
          exit(EXIT_FAILURE);
